@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LockSafe – Social Media Feeds Integration Demo</title>
+    <style>
+        /* ── Reset & Base ─────────────────────────────── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1a1a2e;
+            line-height: 1.6;
+        }
+
+        /* ── Header ───────────────────────────────────── */
+        .header {
+            background: linear-gradient(135deg, #0f3460, #16213e);
+            color: #fff;
+            text-align: center;
+            padding: 48px 24px 36px;
+        }
+        .header h1 { font-size: 2rem; margin-bottom: 8px; }
+        .header p  { font-size: 1.05rem; opacity: .85; max-width: 700px; margin: 0 auto; }
+
+        /* ── Instructions Banner ──────────────────────── */
+        .instructions-banner {
+            max-width: 1100px;
+            margin: 28px auto 0;
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 18px 24px;
+            border-radius: 6px;
+            font-size: .95rem;
+        }
+        .instructions-banner strong { color: #856404; }
+
+        /* ── Grid Container ───────────────────────────── */
+        .feeds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
+            max-width: 1100px;
+            margin: 32px auto 48px;
+            padding: 0 20px;
+        }
+
+        /* ── Card ─────────────────────────────────────── */
+        .feed-card {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,.07);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .feed-card__header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .feed-card__icon {
+            width: 40px; height: 40px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 700; font-size: 1.15rem;
+        }
+        .feed-card__icon.fb  { background: #1877F2; }
+        .feed-card__icon.tw  { background: #000;    }
+        .feed-card__icon.li  { background: #0A66C2; }
+        .feed-card__icon.gb  { background: #4285F4; }
+        .feed-card__header h2 { font-size: 1.1rem; }
+        .feed-card__body { padding: 20px; flex: 1; }
+        .feed-card__body .embed-placeholder {
+            background: #f0f2f5;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            min-height: 320px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #666;
+            padding: 24px;
+            font-size: .95rem;
+        }
+        .feed-card__body iframe {
+            border: none;
+            width: 100%;
+            border-radius: 8px;
+        }
+        .feed-card__footer {
+            padding: 14px 20px;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            font-size: .85rem;
+            color: #555;
+        }
+        .feed-card__footer code {
+            background: #eef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: .82rem;
+        }
+
+        /* ── Code Block Section ───────────────────────── */
+        .code-section {
+            max-width: 1100px;
+            margin: 0 auto 48px;
+            padding: 0 20px;
+        }
+        .code-section h2 {
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+            color: #0f3460;
+        }
+        .code-block {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            padding: 20px 24px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: "Fira Code", "Cascadia Code", Consolas, monospace;
+            font-size: .85rem;
+            line-height: 1.7;
+            margin-bottom: 28px;
+            white-space: pre;
+        }
+        .code-block .comment { color: #6c7086; }
+        .code-block .tag     { color: #89b4fa; }
+        .code-block .attr    { color: #a6e3a1; }
+        .code-block .val     { color: #f9e2af; }
+
+        /* ── Footer Icons Demo ────────────────────────── */
+        .footer-demo {
+            background: #16213e;
+            color: #fff;
+            text-align: center;
+            padding: 36px 20px;
+        }
+        .footer-demo h3 { margin-bottom: 16px; font-size: 1.1rem; font-weight: 500; }
+        .social-icons { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; }
+        .social-icons a {
+            display: flex; align-items: center; justify-content: center;
+            width: 46px; height: 46px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.12);
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: background .2s;
+        }
+        .social-icons a:hover { background: rgba(255,255,255,.25); }
+
+        /* ── Responsive ───────────────────────────────── */
+        @media (max-width: 480px) {
+            .header h1 { font-size: 1.4rem; }
+            .feeds-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<div class="header">
+    <h1>🔒 LockSafe – Social Media Feeds Integration</h1>
+    <p>A ready-to-use demo showing how to embed Facebook, Twitter/X, LinkedIn and Google Business feeds into the LockSafe website.</p>
+</div>
+
+<!-- ═══════════════════════ INSTRUCTIONS ═════════════════ -->
+<div class="instructions-banner">
+    <strong>⚠️ Before you begin:</strong> Replace the placeholder values below with your actual social media page IDs / URLs.
+    Each card shows the <em>live embed</em> (or a placeholder if IDs haven't been set) plus copy-paste code.
+    See the companion guide (<code>social_media_integration_guide.md</code>) for detailed step-by-step instructions.
+</div>
+
+<!-- ═══════════════════════ FEED CARDS ═══════════════════ -->
+<div class="feeds-grid">
+
+    <!-- ── Facebook ─────────────────────────────────── -->
+    <div class="feed-card">
+        <div class="feed-card__header">
+            <div class="feed-card__icon fb">f</div>
+            <h2>Facebook Page Feed</h2>
+        </div>
+        <div class="feed-card__body">
+            <!--
+                INSTRUCTIONS:
+                1. Go to https://developers.facebook.com/docs/plugins/page-plugin/
+                2. Enter your Facebook Page URL (e.g. https://www.facebook.com/LockSafeUK)
+                3. Set width to 340, tabs to "timeline", check "Show Friend's Faces"
+                4. Click "Get Code" → copy the two snippets
+                5. Paste the SDK script once in your <body>, and the div wherever you want the feed.
+
+                Below is a working embed — replace the href with YOUR page URL.
+            -->
+            <iframe
+                src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FLockSafeUK&tabs=timeline&width=340&height=500&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=true"
+                width="340"
+                height="500"
+                style="border:none;overflow:hidden;max-width:100%;"
+                scrolling="no"
+                frameborder="0"
+                allowfullscreen="true"
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                loading="lazy"
+            ></iframe>
+        </div>
+        <div class="feed-card__footer">
+            <strong>Replace:</strong> Change <code>LockSafeUK</code> in the URL to your actual Facebook Page name/slug.
+        </div>
+    </div>
+
+    <!-- ── Twitter / X ──────────────────────────────── -->
+    <div class="feed-card">
+        <div class="feed-card__header">
+            <div class="feed-card__icon tw">𝕏</div>
+            <h2>Twitter / X Timeline</h2>
+        </div>
+        <div class="feed-card__body">
+            <!--
+                INSTRUCTIONS:
+                1. Go to https://publish.twitter.com
+                2. Paste your Twitter profile URL (e.g. https://twitter.com/LockSafeUK)
+                3. Choose "Embedded Timeline"
+                4. Customise height (500px), theme (light/dark)
+                5. Copy the generated code and paste it below.
+
+                Below is a working embed — replace the href with YOUR handle.
+            -->
+            <a class="twitter-timeline"
+               data-height="500"
+               data-width="340"
+               data-theme="light"
+               data-chrome="noheader nofooter noborders"
+               href="https://twitter.com/LockSafeUK?ref_src=twsrc%5Etfw">
+                Tweets by @LockSafeUK
+            </a>
+            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        </div>
+        <div class="feed-card__footer">
+            <strong>Replace:</strong> Change <code>LockSafeUK</code> to your actual X/Twitter handle.
+        </div>
+    </div>
+
+    <!-- ── LinkedIn ──────────────────────────────────── -->
+    <div class="feed-card">
+        <div class="feed-card__header">
+            <div class="feed-card__icon li">in</div>
+            <h2>LinkedIn Company Feed</h2>
+        </div>
+        <div class="feed-card__body">
+            <!--
+                IMPORTANT NOTE:
+                LinkedIn does NOT offer a free embed widget for company page feeds.
+                The options are:
+                  A) "Follow Company" button (free, official)
+                  B) Use a third-party aggregator (Elfsight, Curator.io, Juicer, Tagembed)
+                  C) Manually curate posts as cards on your site
+
+                Below we show:
+                  • The official "Follow" button
+                  • A placeholder for a third-party feed widget
+            -->
+
+            <!-- Official LinkedIn Follow Button -->
+            <div style="text-align:center;margin-bottom:16px;padding-top:12px;">
+                <script src="https://platform.linkedin.com/in.js" type="text/javascript">lang: en_US</script>
+                <script type="IN/FollowCompany" data-id="locksafe" data-counter="bottom"></script>
+            </div>
+
+            <div class="embed-placeholder">
+                <div>
+                    <p style="font-size:1.1rem;margin-bottom:8px;">📌 LinkedIn Feed</p>
+                    <p>LinkedIn does <strong>not</strong> provide a free timeline embed widget.<br><br>
+                    <strong>Recommended:</strong> Use a service like
+                    <a href="https://elfsight.com/linkedin-feed-widget/" target="_blank" style="color:#0A66C2;">Elfsight</a>,
+                    <a href="https://curator.io" target="_blank" style="color:#0A66C2;">Curator.io</a>, or
+                    <a href="https://tagembed.com/linkedin-widget/" target="_blank" style="color:#0A66C2;">Tagembed</a>
+                    to pull in your LinkedIn posts.<br><br>
+                    See the integration guide for details.</p>
+                </div>
+            </div>
+        </div>
+        <div class="feed-card__footer">
+            <strong>Replace:</strong> Change <code>data-id="locksafe"</code> to your LinkedIn company page slug.
+        </div>
+    </div>
+
+    <!-- ── Google Business Reviews ───────────────────── -->
+    <div class="feed-card">
+        <div class="feed-card__header">
+            <div class="feed-card__icon gb">G</div>
+            <h2>Google Business Reviews</h2>
+        </div>
+        <div class="feed-card__body">
+            <!--
+                IMPORTANT NOTE:
+                Google does NOT provide an official embeddable reviews widget.
+                Options:
+                  A) Use Google's Place API (requires API key + development work)
+                  B) Use a third-party widget (Elfsight, EmbedSocial, Tagembed, Widget.io)
+                  C) Manually display selected reviews as styled cards
+
+                Below we show a styled manual review card approach,
+                plus a third-party widget placeholder.
+            -->
+
+            <!-- Manual Review Cards (static, you update these yourself) -->
+            <div style="padding:4px 0;">
+                <div style="background:#f8f9fa;border-radius:8px;padding:14px 16px;margin-bottom:10px;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                        <span style="color:#fbbc04;font-size:1rem;">★★★★★</span>
+                        <span style="font-weight:600;font-size:.9rem;">Sarah M.</span>
+                    </div>
+                    <p style="font-size:.88rem;color:#444;">"Brilliant service! The locksmith arrived in 25 minutes and the whole process was completely transparent. The digital report was a great touch."</p>
+                </div>
+                <div style="background:#f8f9fa;border-radius:8px;padding:14px 16px;margin-bottom:10px;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                        <span style="color:#fbbc04;font-size:1rem;">★★★★★</span>
+                        <span style="font-weight:600;font-size:.9rem;">James W.</span>
+                    </div>
+                    <p style="font-size:.88rem;color:#444;">"Finally a locksmith service I can trust. Knowing the price upfront and having GPS tracking gave me real peace of mind."</p>
+                </div>
+                <div style="background:#f8f9fa;border-radius:8px;padding:14px 16px;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                        <span style="color:#fbbc04;font-size:1rem;">★★★★★</span>
+                        <span style="font-weight:600;font-size:.9rem;">Emily R.</span>
+                    </div>
+                    <p style="font-size:.88rem;color:#444;">"4.9 stars for a reason — honest pricing, fast arrival, and a full PDF report sent to my phone. Highly recommend."</p>
+                </div>
+            </div>
+        </div>
+        <div class="feed-card__footer">
+            <strong>Tip:</strong> Use <a href="https://elfsight.com/google-reviews-widget/" target="_blank" style="color:#4285F4;">Elfsight Google Reviews</a> or the Google Places API for a live feed.
+        </div>
+    </div>
+
+</div><!-- /.feeds-grid -->
+
+<!-- ═══════════════════════ COPY-PASTE CODE BLOCKS ═══════ -->
+<div class="code-section">
+    <h2>📋 Copy-Paste Code Snippets</h2>
+
+    <h3 style="margin-bottom:8px;">1. Facebook Page Plugin</h3>
+    <div class="code-block"><span class="comment">&lt;!-- Facebook Page Plugin – paste inside your page where you want the feed --&gt;</span>
+<span class="tag">&lt;iframe</span>
+  <span class="attr">src</span>=<span class="val">"https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2F<strong>YOUR_PAGE</strong>&amp;tabs=timeline&amp;width=340&amp;height=500&amp;small_header=true&amp;adapt_container_width=true&amp;hide_cover=false&amp;show_facepile=true"</span>
+  <span class="attr">width</span>=<span class="val">"340"</span> <span class="attr">height</span>=<span class="val">"500"</span>
+  <span class="attr">style</span>=<span class="val">"border:none;overflow:hidden;max-width:100%;"</span>
+  <span class="attr">scrolling</span>=<span class="val">"no"</span> <span class="attr">frameborder</span>=<span class="val">"0"</span>
+  <span class="attr">allowfullscreen</span>=<span class="val">"true"</span>
+  <span class="attr">allow</span>=<span class="val">"autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"</span>
+  <span class="attr">loading</span>=<span class="val">"lazy"</span>
+<span class="tag">&gt;&lt;/iframe&gt;</span>
+
+<span class="comment">&lt;!-- ⬆ Replace YOUR_PAGE with your Facebook page name (e.g. LockSafeUK) --&gt;</span></div>
+
+    <h3 style="margin-bottom:8px;">2. Twitter / X Embedded Timeline</h3>
+    <div class="code-block"><span class="comment">&lt;!-- Twitter Timeline – paste where you want the feed --&gt;</span>
+<span class="tag">&lt;a</span> <span class="attr">class</span>=<span class="val">"twitter-timeline"</span>
+   <span class="attr">data-height</span>=<span class="val">"500"</span>
+   <span class="attr">data-theme</span>=<span class="val">"light"</span>
+   <span class="attr">data-chrome</span>=<span class="val">"noheader nofooter noborders"</span>
+   <span class="attr">href</span>=<span class="val">"https://twitter.com/<strong>YOUR_HANDLE</strong>"</span><span class="tag">&gt;</span>
+   Tweets by @YOUR_HANDLE
+<span class="tag">&lt;/a&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">async</span> <span class="attr">src</span>=<span class="val">"https://platform.twitter.com/widgets.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- ⬆ Replace YOUR_HANDLE with your X handle (e.g. LockSafeUK) --&gt;</span>
+<span class="comment">&lt;!-- Only include the script tag ONCE on your page --&gt;</span></div>
+
+    <h3 style="margin-bottom:8px;">3. LinkedIn Follow Button</h3>
+    <div class="code-block"><span class="comment">&lt;!-- LinkedIn Follow Button – paste once in your page --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://platform.linkedin.com/in.js"</span> <span class="attr">type</span>=<span class="val">"text/javascript"</span><span class="tag">&gt;</span>lang: en_US<span class="tag">&lt;/script&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">type</span>=<span class="val">"IN/FollowCompany"</span> <span class="attr">data-id</span>=<span class="val">"<strong>YOUR_COMPANY_ID</strong>"</span> <span class="attr">data-counter</span>=<span class="val">"bottom"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- ⬆ Replace YOUR_COMPANY_ID with your LinkedIn company page ID --&gt;</span>
+<span class="comment">&lt;!-- Find it at: linkedin.com/company/YOUR-SLUG → Admin → Settings --&gt;</span>
+
+<span class="comment">&lt;!-- For a FULL feed, use a third-party service like Elfsight or Curator.io --&gt;</span>
+<span class="comment">&lt;!-- Example (Elfsight): paste their provided script tag here --&gt;</span></div>
+
+    <h3 style="margin-bottom:8px;">4. Google Business Reviews (Third-Party Widget Example)</h3>
+    <div class="code-block"><span class="comment">&lt;!-- Google Reviews via Elfsight (example) --&gt;</span>
+<span class="comment">&lt;!-- 1. Sign up at https://elfsight.com/google-reviews-widget/ --&gt;</span>
+<span class="comment">&lt;!-- 2. Connect your Google Business Profile --&gt;</span>
+<span class="comment">&lt;!-- 3. Customise the widget appearance --&gt;</span>
+<span class="comment">&lt;!-- 4. Copy the embed code they give you (looks like below) --&gt;</span>
+
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"https://static.elfsight.com/platform/platform.js"</span> <span class="attr">async</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="val">"elfsight-app-<strong>YOUR-WIDGET-ID</strong>"</span> <span class="attr">data-elfsight-app-lazy</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="comment">&lt;!-- ⬆ Replace YOUR-WIDGET-ID with the ID from your Elfsight dashboard --&gt;</span></div>
+
+    <h3 style="margin-bottom:8px;">5. Footer Social Icons (Recommended for LockSafe)</h3>
+    <div class="code-block"><span class="comment">&lt;!-- Social Media Icons for Footer – uses inline SVG, no dependencies --&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">style</span>=<span class="val">"display:flex;justify-content:center;gap:16px;padding:24px 0;"</span><span class="tag">&gt;</span>
+
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://facebook.com/<strong>YOUR_PAGE</strong>"</span> <span class="attr">target</span>=<span class="val">"_blank"</span> <span class="attr">aria-label</span>=<span class="val">"Facebook"</span>
+     <span class="attr">style</span>=<span class="val">"width:42px;height:42px;border-radius:50%;background:#1877F2;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;font-weight:700;"</span><span class="tag">&gt;</span>f<span class="tag">&lt;/a&gt;</span>
+
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://twitter.com/<strong>YOUR_HANDLE</strong>"</span> <span class="attr">target</span>=<span class="val">"_blank"</span> <span class="attr">aria-label</span>=<span class="val">"Twitter"</span>
+     <span class="attr">style</span>=<span class="val">"width:42px;height:42px;border-radius:50%;background:#000;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;font-weight:700;"</span><span class="tag">&gt;</span>𝕏<span class="tag">&lt;/a&gt;</span>
+
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://linkedin.com/company/<strong>YOUR_SLUG</strong>"</span> <span class="attr">target</span>=<span class="val">"_blank"</span> <span class="attr">aria-label</span>=<span class="val">"LinkedIn"</span>
+     <span class="attr">style</span>=<span class="val">"width:42px;height:42px;border-radius:50%;background:#0A66C2;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;font-weight:700;"</span><span class="tag">&gt;</span>in<span class="tag">&lt;/a&gt;</span>
+
+  <span class="tag">&lt;a</span> <span class="attr">href</span>=<span class="val">"https://g.page/<strong>YOUR_BUSINESS</strong>"</span> <span class="attr">target</span>=<span class="val">"_blank"</span> <span class="attr">aria-label</span>=<span class="val">"Google"</span>
+     <span class="attr">style</span>=<span class="val">"width:42px;height:42px;border-radius:50%;background:#4285F4;display:flex;align-items:center;justify-content:center;color:#fff;text-decoration:none;font-weight:700;"</span><span class="tag">&gt;</span>G<span class="tag">&lt;/a&gt;</span>
+
+<span class="tag">&lt;/div&gt;</span></div>
+</div>
+
+<!-- ═══════════════════════ FOOTER ICONS DEMO ════════════ -->
+<div class="footer-demo">
+    <h3>Footer Social Icons Preview</h3>
+    <div class="social-icons">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="Twitter / X">𝕏</a>
+        <a href="#" aria-label="LinkedIn">in</a>
+        <a href="#" aria-label="Google Business">G</a>
+    </div>
+    <p style="margin-top:18px;font-size:.85rem;opacity:.7;">LockSafe.uk © 2026 — Social Media Integration Demo</p>
+</div>
+
+</body>
+</html>
