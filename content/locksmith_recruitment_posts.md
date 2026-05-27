@@ -22,7 +22,7 @@ This isn't just tech for tech's sake — it's your professional reputation, back
 
 If you're a vetted, DBS-checked, insured locksmith who takes pride in doing things properly — LockSafe is the platform that finally proves it.
 
-👉 **Ready to let your work speak for itself? Visit LockSafe.uk or call 07818 333 989 to join our network of verified professionals today.**
+👉 **Ready to let your work speak for itself? Visit LockSafe.uk or call +44 20 4577 1989 to join our network of verified professionals today.**
 
 `#Locksmith` `#LocksmithLife` `#LockSafe` `#UKLocksmith` `#TradesmenUK` `#TransparentTrading` `#DigitalPaperTrail` `#ProfessionalLocksmith`
 
@@ -169,7 +169,7 @@ Once you're verified, you'll appear on the platform for customers in your area. 
 
 We're currently expanding our network across the UK and actively looking for experienced, trustworthy locksmiths and security technicians who want to grow their business the right way.
 
-👉 **Don't wait — spaces in your area may be limited. Visit LockSafe.uk or call 07818 333 989 to start your application today. Let's build something better, together.** 🔐
+👉 **Don't wait — spaces in your area may be limited. Visit LockSafe.uk or call +44 20 4577 1989 to start your application today. Let's build something better, together.** 🔐
 
 `#JoinLockSafe` `#LocksmithJobs` `#LockSafe` `#NowHiring` `#UKLocksmith` `#LocksmithCareers` `#ApplyNow` `#GrowYourBusiness`
 
@@ -188,4 +188,4 @@ We're currently expanding our network across the UK and actively looking for exp
 
 ---
 
-*All posts reference LockSafe.uk and contact number 07818 333 989.*
+*All posts reference LockSafe.uk and contact number +44 20 4577 1989.*

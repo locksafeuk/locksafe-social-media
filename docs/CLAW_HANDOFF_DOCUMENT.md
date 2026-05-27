@@ -48,7 +48,7 @@ LockSafe's primary differentiator is a **legally-binding Digital Paper Trail** f
 | **Locksmiths** | Guaranteed payment, verified customers, dispute protection | "Set your own fees. Get paid fairly. Your work is backed by evidence." |
 
 ### Key Business Details
-- **Phone:** 07818 333 989 (24/7 emergency line)
+- **Phone:** +44 20 4577 1989 (24/7 emergency line)
 - **Email:** contact@locksafe.uk
 - **Website:** www.locksafe.uk
 - **Service Area:** Entire United Kingdom
@@ -202,7 +202,7 @@ PDF versions exist for most markdown files (same filename with `.pdf` extension)
 - Lead with the problem (scams, overcharging, rogue traders) then present LockSafe as the solution
 - Use specific numbers and facts (£25–£49 assessment fee, 15–30 min response, 4.9/5 rating)
 - Reference the Digital Paper Trail in most posts
-- Include the phone number (07818 333 989) and website (locksafe.uk) in CTAs
+- Include the phone number (+44 20 4577 1989) and website (locksafe.uk) in CTAs
 - Use the origin story (elderly parent overcharged) for emotional connection
 - For recruitment: emphasise fair pay, guaranteed payment, professional credibility
 
